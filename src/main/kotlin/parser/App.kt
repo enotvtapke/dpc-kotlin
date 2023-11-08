@@ -1,5 +1,6 @@
 package parser
 
+import graph.Node
 import java.io.File
 
 private operator fun String.not() = Term(this)
@@ -19,7 +20,7 @@ fun step(r: List<Result>) = r.flatMap {
   }
 }
 
-fun pass(p: Parser, s: String): Immediate {
+fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
   var res = p(s)
   var step = 1
   println("1 $res")
@@ -30,8 +31,15 @@ fun pass(p: Parser, s: String): Immediate {
     println("$step $res")
 //    File("./res.dot").writeText(res.joinToString("\n\n") { it.data().toString() })
     res.toDot("res_${step}.dot")
+    if (step == maxStep) {
+      break
+    }
   }
-  return res.filterIsInstance<Immediate>().first { it.remainder.isEmpty() }
+  return if (maxStep != Int.MAX_VALUE) {
+    Immediate(Node("a"), "a")
+  } else {
+    res.filterIsInstance<Immediate>().first { it.remainder.isEmpty() }
+  }
 }
 
 private fun List<Result>.toDot(filename: String = "res.dot") {
@@ -48,15 +56,15 @@ private fun List<Result>.toDot(filename: String = "res.dot") {
 
 fun main() {
   val ccc = fix("C") {
-    -it * !"c" + !"a"
+    -it * !"a" + !"c"
   }
   val term = fix("T") {
     -it * !"+" * it +
-            -it * !"-" * it +
-            !"a"
+    -it * !"-" * it +
+    !"a"
   }
-//  println(pass(ccc, "acccc"))
-  println(pass(term, "a+a-a"))
+  println(pass(ccc, "ccc", maxStep = 5))
+//  println(pass(term, "a+a-a"))
 }
 
 private data object C : Parser {

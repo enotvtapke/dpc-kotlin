@@ -1,21 +1,36 @@
 package graph
 
-data class Node<T>(val label: T, val children: MutableList<Node<*>>, private val id: Long) {
-  constructor(node: T) : this(node, mutableListOf(), nextId())
+data class Node(val label: String, val children: MutableList<Node>, private val id: Long) {
+  constructor(label: String) : this(label, mutableListOf(), nextId())
+  constructor(label: String, children: MutableList<Node>) : this(label, children, nextId())
+  init {
+    if (id == 103L) {
+      println()
+    }
+  }
 
-  fun <T> addChild(child: Node<T>) {
+  fun addChild(child: Node): Node {
     children.add(child)
+    return this
   }
 
-  fun addChild(child: T) {
-    children.add(Node(child))
+  fun cp(): Node {
+    return Node(this.label, this.children.map(Node::cp).toMutableList(), nextId())
   }
+
+//  fun addChild(childLabel: Any): LN {
+//    children.add(LN(childLabel))
+//    return this
+//  }
 
   private fun toStringInternal(): String =
     buildString {
-      append("$id [label=\"$label\"]")
+      if (id == 103L) {
+        println(111)
+      }
+      append("$id [label=\"${label.toString().replace("\"", "\\\"")}\"]")
       appendLine()
-      val childrenIds = children.map(Node<*>::id).joinToString(separator = " ")
+      val childrenIds = children.map(Node::id).joinToString(separator = " ")
       append("$id -- {$childrenIds}")
       appendLine()
       children.forEach { append(it.toStringInternal()) }
@@ -31,7 +46,7 @@ data class Node<T>(val label: T, val children: MutableList<Node<*>>, private val
   }
 
   override fun equals(other: Any?): Boolean {
-    if (other !is Node<*>) return false
+    if (other !is Node) return false
     return this.label == other.label && this.children == other.children
   }
 
