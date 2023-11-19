@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+  implementation("guru.nidi:graphviz-java:0.18.1")
+  implementation("org.slf4j:slf4j-api:2.0.9")
   testImplementation(kotlin("test"))
 }
 

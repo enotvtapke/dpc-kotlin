@@ -7,7 +7,7 @@ private data class ResultWrapper(val node: Node, val result: Result)
 
 private operator fun String.not() = Term(this)
 operator fun Parser.times(b: Parser) = Seq(listOf(this, b))
-operator fun Seq.times(b: Parser) = Seq(this.seqs + listOf(b))
+operator fun Seq.times(b: Parser) = Seq(this.seq + listOf(b))
 operator fun Seq.plus(b: Seq) = Alt(listOf(this, b))
 operator fun Seq.plus(b: Parser) = Alt(listOf(this, Seq(listOf(b))))
 operator fun Alt.plus(b: Seq) = Alt(this.alts + listOf(b))
@@ -40,13 +40,13 @@ fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
   val root = Node("root")
   var res = listOf(ResultWrapper(root, Deferred(p, s)))
   var step = 1
-  println("1 $res")
   while (res.filterImmediate().all { it.remainder.isNotEmpty() }) {
+    println("$step ${res.map { it.result }}")
     res = step(res)
     step++
-    println("$step ${res.map { it.result }}")
     if (step == maxStep) break
   }
+  println("$step ${res.map { it.result }}")
   File("./res1_parser3.dot").writeText(root.toString())
   return if (maxStep != Int.MAX_VALUE) {
     Immediate("a")

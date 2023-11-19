@@ -1,6 +1,7 @@
 package parser
 
 import graph.Node
+import graph.renderGraph
 import java.io.File
 
 private operator fun String.not() = Term(this)
@@ -24,13 +25,12 @@ fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
   var res = p(s)
   var step = 1
   println("1 $res")
-  res.toDot("res_${step}.dot")
+  renderGraph("parser_res_${step}", res.toDot())
   while (res.filterIsInstance<Immediate>().all { it.remainder.isNotEmpty() }) {
     res = step(res)
     step++
     println("$step $res")
-//    File("./res.dot").writeText(res.joinToString("\n\n") { it.data().toString() })
-    res.toDot("res_${step}.dot")
+    renderGraph("parser_res_${step}", res.toDot())
     if (step == maxStep) {
       break
     }
@@ -42,17 +42,14 @@ fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
   }
 }
 
-private fun List<Result>.toDot(filename: String = "res.dot") {
-  File("./$filename").writeText(
-    buildString {
-      append("graph G {")
-      appendLine()
-      append(this@toDot.joinToString("\n") { it.data().toString().replace("graph", "subgraph") }.prependIndent("  "))
-      appendLine()
-      append("}")
-      appendLine()
-    })
-}
+private fun List<Result>.toDot() = buildString {
+    append("graph G {")
+    appendLine()
+    append(this@toDot.joinToString("\n") { it.data().toString().replace("graph", "subgraph") }.prependIndent("  "))
+    appendLine()
+    append("}")
+    appendLine()
+  }
 
 fun main() {
   val ccc = fix("C") {

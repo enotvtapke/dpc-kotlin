@@ -19,20 +19,20 @@ data class Def(val parser: Parser) : Parser {
   override fun toString() = "[$parser]"
 }
 
-data class Seq(val seqs: List<Parser>) : Parser {
-  private fun internal1(s: String, seqs1: List<Parser>): List<Result> =
+data class Seq(val seq: List<Parser>) : Parser {
+  private fun internal(s: String, seqTail: List<Parser>): List<Result> =
     when {
-      seqs1.isEmpty() -> listOf(Immediate(s))
-      else -> seqs1.first()(s).flatMap {
+      seqTail.isEmpty() -> listOf(Immediate(s))
+      else -> seqTail.first()(s).flatMap {
         when (it) {
-          is Immediate -> internal1(it.remainder, seqs1.drop(1))
-          is Deferred -> listOf(Deferred(Seq(listOf(it.parser) + seqs1.drop(1)), it.remainder))
+          is Immediate -> internal(it.remainder, seqTail.drop(1))
+          is Deferred -> listOf(Deferred(Seq(listOf(it.parser) + seqTail.drop(1)), it.remainder))
         }
       }
     }
 
-  override fun invoke(s: String) = internal1(s, seqs)
-  override fun toString() = seqs.joinToString(" \u22B3 ")
+  override fun invoke(s: String) = internal(s, seq)
+  override fun toString() = seq.joinToString(" \u22B3 ")
 }
 
 data class Alt(val alts: List<Seq>) : Parser {

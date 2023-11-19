@@ -1,6 +1,7 @@
 package parser2
 
 import graph.Node
+import graph.renderGraph
 import java.io.File
 
 private data class ResultWrapper(val node: Node, val result: Result)
@@ -43,7 +44,8 @@ fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
     println("$step ${res.map { it.result }}")
     if (step == maxStep) break
   }
-  File("./res1.dot").writeText(root.toString())
+  renderGraph("parser2_res", root.toString())
+//  File("./res1.dot").writeText(root.toString())
   return if (maxStep != Int.MAX_VALUE) {
     Immediate("a")
   } else {
