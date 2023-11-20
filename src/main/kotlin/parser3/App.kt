@@ -1,7 +1,7 @@
 package parser3
 
 import graph.Node
-import java.io.File
+import graph.renderGraph
 
 private data class ResultWrapper(val node: Node, val result: Result)
 
@@ -47,7 +47,7 @@ fun pass(p: Parser, s: String, maxStep: Int = Int.MAX_VALUE): Immediate {
     if (step == maxStep) break
   }
   println("$step ${res.map { it.result }}")
-  File("./res1_parser3.dot").writeText(root.toString())
+  renderGraph("parser3_res", root.toString())
   return if (maxStep != Int.MAX_VALUE) {
     Immediate("a")
   } else {
@@ -65,13 +65,21 @@ fun main() {
 //    -it * !"-" * it +
 //    !"a"
 //  }
-  println(ccc)
-  println(pass(T, "a+a-a", 5))
+
+//  println(ccc)
+//  println(pass(T, "a+a-a", 5))
+
+  pass(CC, "ccca", 10)
+
 //  println(pass(term, "a+a-a"))
 }
 
 private data object C : Parser {
   override fun invoke(s: String) = (-this * !"c" + !"c")(s)
+}
+
+private data object CC : NonTerminal("CC") {
+  override fun checkedInvoke(s: String) = (-this * !"c" + !"c")(s)
 }
 
 private data object T : Parser {
