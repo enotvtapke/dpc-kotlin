@@ -37,7 +37,8 @@ private fun step(r: List<ResultWrapper>) = r.flatMap { (prevNode, prevRes) ->
 fun Parser.run(
   s: String,
   maxStep: Int = Int.MAX_VALUE,
-  stopCriteria: Predicate<Result> = Predicate { it is Immediate && it.remainder.isEmpty() }
+  stopCriteria: Predicate<Result> = Predicate { it is Immediate && it.remainder.isEmpty() },
+  enableLogging: Boolean = true
 ): Result? {
   val root = Node(this.toString())
   var stepRes = listOf(ResultWrapper(root, Deferred(listOf(), this, s)))
@@ -46,7 +47,7 @@ fun Parser.run(
   run br@ {
     repeat(maxStep) {
       val stepResResult = stepRes.map { it.result }
-      println("$stepNumber $stepResResult")
+      if (enableLogging) println("$stepNumber $stepResResult")
       if (stepResResult.any(stopCriteria::test)) {
         parseResult = stepResResult.first(stopCriteria::test)
         return@br
@@ -55,13 +56,16 @@ fun Parser.run(
       stepNumber++
     }
   }
-  renderGraph("parserRefac_res", root.toString())
+  if (enableLogging) renderGraph("parserRefac_res", root.toString())
   return parseResult
 }
 
 fun main() {
-  println("\n\nResult for $T:\n" + T.run("a+a-a", 5))
-//  println("\nResult for $CCC:\n" + CCC.run("cca", 5))
+  failedBranchesSet.clear()
+  println("\nResult of applying $CCC:\n" + CCC.run("ccccacccc", 14, enableLogging = true))
+//  println("\nResult for $CCC:\n" + CCC.run("ccca", 20))
+  println("\nSet of failed branches (size ${failedBranchesSet.size()}):")
+  println(failedBranchesSet)
 }
 
 private data object CCC : Parser {

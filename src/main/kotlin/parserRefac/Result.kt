@@ -22,4 +22,4 @@ data class Failed(override val consumed: List<Token>, override val remainder: St
   override fun toString() = "-${consumed.print} `$remainder`-"
 }
 
-private val List<Token>.print get() = "\"" + joinToString("") + "\""
+val List<Token>.print get() = "\"" + joinToString("") + "\""

@@ -1,5 +1,7 @@
 package parserRefac
 
+val failedBranchesSet = FailedBranchesSet()
+
 fun interface Parser {
   operator fun invoke(s: String): List<Result>
 }
@@ -28,8 +30,11 @@ data class Seq(val seq: List<Parser>) : Parser {
       head(s).flatMap { res ->
         when (res) {
           is Immediate -> internal(res.remainder, consumed + res.consumed, tail)
-          is Failed -> listOf(Failed(consumed + res.consumed, res.remainder))
-          is Deferred -> listOf(Deferred(consumed, Seq(listOf(res.parser) + tail), res.remainder))
+          is Failed -> {
+            failedBranchesSet.add(s, consumed + res.consumed)
+            listOf(Failed(consumed + res.consumed, res.remainder))
+          }
+          is Deferred -> listOf(Deferred(consumed + res.consumed, Seq(listOf(res.parser) + tail), res.remainder))
         }
       }
     }
