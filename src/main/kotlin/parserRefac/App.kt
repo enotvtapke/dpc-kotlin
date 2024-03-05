@@ -62,10 +62,14 @@ fun Parser.run(
 
 fun main() {
   failedBranchesSet.clear()
-  println("\nResult of applying $CCC:\n" + CCC.run("ccccacccc", 14, enableLogging = true))
+  println("\nResult of applying $S:\n" + S.run("ssss", 14, enableLogging = true))
 //  println("\nResult for $CCC:\n" + CCC.run("ccca", 20))
   println("\nSet of failed branches (size ${failedBranchesSet.size()}):")
   println(failedBranchesSet)
+}
+
+private data object S : Parser {
+  override fun invoke(s: String): List<Result> = (-this * this * this + -this * this + !'s')(s)
 }
 
 private data object CCC : Parser {
