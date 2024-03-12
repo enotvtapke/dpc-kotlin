@@ -14,10 +14,11 @@ object E : BaseParser<String, State<CharSequence>>() {
 object F : BaseParser<String, State<CharSequence>>() {
   override val par: ParserM<String, State<CharSequence>> =
     def(
-      (term("(") bind E bind { e -> term(")").map { e } })
+      (term("(") bind E bind { e -> term(")").map { e } }) alt E
     )
 }
 
 fun main() {
-  println(run(F, State.ret("(f)")))
+  println(run(F, State.ret("(feee)")))
+//  println(run(E, State.ret("fee")))
 }

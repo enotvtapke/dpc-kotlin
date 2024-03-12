@@ -1,7 +1,6 @@
 package monadicParser
 
 import monadicParser.ParserM.Companion.fetch
-import monadicParser.ParserM.Companion.update
 
 data class InvocationStack<S>(val impl: MutableList<InvocationStackElement<S>> = ArrayDeque()): Cloneable {
   data class InvocationStackElement<S>(val parser: ParserM<*, State<S>>, val state: S)
@@ -30,9 +29,16 @@ data class State<S>(val s: S, val invocationStack: InvocationStack<S>) {
 }
 
 fun <T, S> def(p: ParserM<T, State<S>>): ParserM<T, State<S>> = fetch<State<S>>() bind { s ->
-  if (!s.invocationStack.contains(p, s.s))
-    update<State<S>> {
-      State(it.s, it.invocationStack.clone().push(p, s.s))
-    } bind { p } modify { State(it.s, it.invocationStack.clone().pop()) }
+  if (!s.invocationStack.contains(p, s.s)) {
+    val stepResult = (p )(State(s.s, s.invocationStack.clone().push(p, s.s)))
+    val deferredResults = stepResult.filterIsInstance<Deferred<T, State<S>>>()
+    val immediateResults = stepResult.filterIsInstance<Immediate<T, State<S>>>()
+    (if (deferredResults.isEmpty()) ParserM<T, State<S>> { immediateResults }
+    else if (immediateResults.isEmpty()) ParserM { listOf() }
+    else {
+      val results = immediateResults + deferredResults.flatMap { run(it.parser, it.state) }
+      ParserM { results }
+    }) modify { State(it.s, it.invocationStack.clone().pop()) }
+  }
   else ParserM { listOf(Deferred(p, s)) }
 }

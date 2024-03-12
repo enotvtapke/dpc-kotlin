@@ -15,6 +15,7 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-api:2.22.0")
   implementation("org.apache.logging.log4j:log4j-core:2.22.0")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.21.1")
+  testImplementation("org.assertj:assertj-core:3.25.3")
   testImplementation(kotlin("test"))
 }
 

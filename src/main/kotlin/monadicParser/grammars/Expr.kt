@@ -4,37 +4,37 @@ import monadicParser.*
 
 sealed interface Expr
 data class ExprOp(val left: Expr, val right: Term, val op: String) : Expr {
-//  override fun toString(): String {
-////    return "Expr('$op', $left, $right)"
-//    return "$left $op $right"
-//  }
+  override fun toString(): String {
+//    return "Expr('$op', $left, $right)"
+    return "$left$op$right"
+  }
 }
 
 data class ExprVal(val term: Term) : Expr {
-//  override fun toString() = term.toString()
+  override fun toString() = term.toString()
 }
 
 sealed interface Term
 data class TermOp(val left: Term, val right: FF, val op: String) : Term {
-//  override fun toString(): String {
-////    return "Term('$op', $left, $right)"
-//    return "$left $op $right"
-//  }
+  override fun toString(): String {
+//    return "Term('$op', $left, $right)"
+    return "$left$op$right"
+  }
 }
 
 data class TermVal(val ff: FF) : Term {
-//  override fun toString() = ff.toString()
+  override fun toString() = ff.toString()
 }
 
 sealed interface FF
 data class FFExpr(val expr: Expr) : FF {
-//  override fun toString() = "($expr)"
+  override fun toString() = "($expr)"
 }
 
 data class FFVal(val n: Int) : FF {
-//  override fun toString(): String {
-//    return "$n"
-//  }
+  override fun toString(): String {
+    return "$n"
+  }
 }
 
 object E : BaseParser<Expr, State<CharSequence>>() {
@@ -60,11 +60,11 @@ object F : BaseParser<FF, State<CharSequence>>() {
     def(
       (term("(") bind E bind { e -> term(")").map { FFExpr(e) as FF } })
               alt
-              term("\\d".toRegex()).map { FFVal(it.toString().toInt()) }
+              term("\\d+".toRegex()).map { FFVal(it.toString().toInt()) }
     )
 }
 
 fun main() {
-//  println(run(E, State.ret("(1*3)")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
-  println(run(E, State.ret("(1+1)")))
+//  println(run(E, State.ret("(1+1+1+1)*3")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
+  println(run(E, State.ret("42")))
 }
