@@ -1,11 +1,6 @@
 package stackParser
 
-private operator fun String.not() = Term(this)
 private operator fun Parser.times(b: Parser) = Seq(this, b)
-private operator fun Parser.plus(b: Parser) = Alt(this, b)
-private operator fun Parser.unaryMinus() = Def(this)
-
-private fun s(vararg parsers: Parser) = parsers.reduceRight { parser, acc -> Seq(parser, acc) }
 
 private fun fix(l: String = "self", p: (Parser) -> (Parser)) = object : Parser {
   override fun invoke(s: String) = p(this)(s)
@@ -29,6 +24,9 @@ private class Runner {
 
   private fun inStack(def: Deferred) =
     stack.any { (it.parser == def.parser || def.parser is Seq && (it.parser == def.parser.p || it.parser is Seq && it.parser.p == def.parser.p)) && it.state == def.state }
+
+  private fun <T> inStack(el: StackElement<T>) = stack.any { it == el }
+//    stack.any { (it.parser == def.parser || def.parser is Seq && (it.parser == def.parser.p || it.parser is Seq && it.parser.p == def.parser.p)) && it.state == def.state }
 
   private data class StepResult(
     val immediateResults: List<Immediate>,
@@ -64,6 +62,38 @@ private class Runner {
     }
   }
 
+
+//  private fun step(parser: Parser, state: String): StepResult {
+//    if (inStack(StackElement(parser, state))) return StepResult(
+//      immediateResults = listOf(),
+//      leftRecursiveResults = listOf(Deferred(parser, state))
+//    )
+//    stack.addLast(StackElement(parser, state))
+//    val results = parser(state)
+//    val deferredResults = results.filterIsInstance<Deferred>()
+////    val (leftRecursiveResults, deferredResults) = results.filterIsInstance<Deferred>().partition(::inStack)
+//    val immediateResults = results.filterIsInstance<Immediate>()
+//    val m = deferredResults.map { step(it.parser, it.state) }
+//    stack.removeLast()
+//    StepResult(
+//      immediateResults = immediateResults + m.flatMap { it.immediateResults },
+//      leftRecursiveResults = m.flatMap { it.leftRecursiveResults },
+//    )
+//  }
+
+//  private fun step(parser: Parser, state: String): StepResult {
+//    if (inStack(StackElement(parser, state))) return StepResult(
+//      immediateResults = listOf(),
+//      leftRecursiveResults = listOf(Deferred(parser, state))
+//    )
+//    stack.addLast(StackElement(parser, state))
+//    val results = parser(state)
+//    val leftRecursiveResults = results.filterIsInstance<Deferred>()
+//    val immediateResults = results.filterIsInstance<Immediate>()
+//    stack.removeLast()
+//    return StepResult(immediateResults = immediateResults, leftRecursiveResults = leftRecursiveResults)
+//  }
+
   fun run(parser: Parser, initialState: String): List<Result> {
     val stepResult = step(parser, initialState)
     return if (stepResult.leftRecursiveResults.isEmpty()) stepResult.immediateResults
@@ -76,12 +106,12 @@ private class Runner {
 
 private object A: BaseParser() {
   override val par: Parser
-    get() = s(-C, !"a") + !"a"
+    get() = seq(-C, !"a") + !"a"
 }
 
 private object C: BaseParser() {
   override val par: Parser
-    get() = s(-C, !"d") + s(-A, !"c")
+    get() = seq(-C, !"d") + seq(-A, !"c")
 }
 
 private object CC: BaseParser() {
@@ -95,15 +125,15 @@ private object CCС: BaseParser() {
 }
 
 fun main() {
-  val ccc = -fix("C") {
-    (Seq(it, !"a") + !"c")
+  val ccc = fix("C") {
+    (Seq(-it, !"a") + !"c")
   }
   val term = fix("T") {
-    Seq(-it, Seq(!"+", it)) +
-      Seq(-it, Seq(!"-", it)) +
+    Seq(it, Seq(!"+", it)) +
+      Seq(it, Seq(!"-", it)) +
       !"a"
   }
-  println(Runner().run(CCС, "caa"))
-//  println(Runner().run(term, "a+a"))
+//  println(Runner().run(many(!"a"), "aaaa"))
+  println(Runner().run(ccc, "caaa"))
 //  println(Runner().run(CC, "ecccddd"))
 }

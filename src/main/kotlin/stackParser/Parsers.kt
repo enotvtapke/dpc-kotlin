@@ -4,6 +4,10 @@ fun interface Parser {
   operator fun invoke(s: String): List<Result>
 }
 
+data object Eps : Parser {
+  override fun invoke(s: String) = listOf(Immediate(s))
+}
+
 data class Term(val term: String) : Parser {
   override fun invoke(s: String) =
     if (s.startsWith(term)) listOf(Immediate(s.removePrefix(term))) else listOf()
@@ -35,3 +39,10 @@ data class Alt(val p: Parser, val q: Parser) : Parser {
   override fun invoke(s: String): List<Result> = p(s) + q(s)
   override fun toString() = "$p | $q"
 }
+
+operator fun String.not() = Term(this)
+operator fun Parser.plus(b: Parser) = Alt(this, b)
+operator fun Parser.unaryMinus() = Def(this)
+fun seq(vararg parsers: Parser) = parsers.reduceRight { parser, acc -> Seq(parser, acc) }
+
+fun many(p: Parser): Parser = Parser { s -> (seq(p, many(p)) + Eps)(s) }
