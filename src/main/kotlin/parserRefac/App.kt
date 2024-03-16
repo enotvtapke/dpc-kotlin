@@ -2,6 +2,7 @@ package parserRefac
 
 import graph.Node
 import graph.renderGraph
+import parserRefac.grammars.E
 import java.util.function.Predicate
 
 private data class ResultWrapper(val node: Node, val result: Result)
@@ -62,7 +63,7 @@ fun Parser.run(
 
 fun main() {
   failedBranchesSet.clear()
-  println("\nResult of applying $S:\n" + S.run("ssss", 14, enableLogging = true))
+  println("\nResult of applying $E:\n" + E.run("((((((((((((1))))))))))))", 14, enableLogging = false))
 //  println("\nResult for $CCC:\n" + CCC.run("ccca", 20))
   println("\nSet of failed branches (size ${failedBranchesSet.size()}):")
   println(failedBranchesSet)

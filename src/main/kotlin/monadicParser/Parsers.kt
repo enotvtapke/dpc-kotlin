@@ -30,7 +30,7 @@ fun interface ParserM <T, S> {
     }
   }
 
-  infix fun alt(p: ParserM<T, S>): ParserM<T, S> = ParserM { s -> this(s) + p(s)}
+  infix fun alt(p: ParserM<T, S>): ParserM<T, S> = ParserM { s -> this(s) + p(s) }
 
   infix fun modify(f: (S) -> (S)): ParserM<T, S> = this.bind { t ->
     update(f).map { t }

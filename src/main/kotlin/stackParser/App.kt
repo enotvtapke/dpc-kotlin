@@ -1,5 +1,7 @@
 package stackParser
 
+import stackParser.grammars.Indirect
+
 private operator fun Parser.times(b: Parser) = Seq(this, b)
 
 private fun fix(l: String = "self", p: (Parser) -> (Parser)) = object : Parser {
@@ -7,7 +9,7 @@ private fun fix(l: String = "self", p: (Parser) -> (Parser)) = object : Parser {
   override fun toString() = l
 }
 
-private abstract class BaseParser : Parser {
+abstract class BaseParser : Parser {
   private var r: Parser? = null
   abstract val par: Parser
 
@@ -134,6 +136,8 @@ fun main() {
       !"a"
   }
 //  println(Runner().run(many(!"a"), "aaaa"))
-  println(Runner().run(ccc, "caaa"))
+//  println(Runner().run(ccc, "caaa"))
+  println(Runner().run(Indirect.C, "acccc"))
+
 //  println(Runner().run(CC, "ecccddd"))
 }

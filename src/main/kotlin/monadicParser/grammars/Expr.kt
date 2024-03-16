@@ -37,7 +37,7 @@ data class FFVal(val n: Int) : FF {
   }
 }
 
-object E : BaseParser<Expr, State<CharSequence>>() {
+data object E : BaseParser<Expr, State<CharSequence>>() {
   override val par: ParserM<Expr, State<CharSequence>> =
     def(
       (E bind { e -> term("+") bind { op -> T.map { t -> ExprOp(e, t, op.toString()) as Expr } } })
@@ -46,7 +46,7 @@ object E : BaseParser<Expr, State<CharSequence>>() {
     )
 }
 
-object T : BaseParser<Term, State<CharSequence>>() {
+data object T : BaseParser<Term, State<CharSequence>>() {
   override val par: ParserM<Term, State<CharSequence>> =
     def(
       (T bind { t -> term("*") bind { op -> F.map { f -> TermOp(t, f, op.toString()) as Term } } })
@@ -55,7 +55,7 @@ object T : BaseParser<Term, State<CharSequence>>() {
     )
 }
 
-object F : BaseParser<FF, State<CharSequence>>() {
+data object F : BaseParser<FF, State<CharSequence>>() {
   override val par: ParserM<FF, State<CharSequence>> =
     def(
       (term("(") bind E bind { e -> term(")").map { FFExpr(e) as FF } })
@@ -66,5 +66,8 @@ object F : BaseParser<FF, State<CharSequence>>() {
 
 fun main() {
 //  println(run(E, State.ret("(1+1+1+1)*3")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
-  println(run(E, State.ret("42")))
+  println(run(E, State.ret("1+1")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
+//  println(run(E, State.ret("42")))
+//  println(E(State.ret("42")))
+//  println(E(State.ret("(((((1)))))")))
 }
