@@ -21,7 +21,12 @@ fun <T, S> checkParser(p: ParserM<T, State<S>>, s: State<S>, expected: String) {
 }
 
 fun <T> checkParser(p: ParserM<T, State<CharSequence>>, inOut: CharSequence) {
-  val r = getResultsInternal(p, State.ret(inOut)).filter { it.state.s.isEmpty() }.map { it.res }
+  val r = getFullResults(p, inOut)
   assertThat(r).hasSize(1)
   assertThat(r.first().toString()).isEqualTo(inOut)
 }
+
+fun <T> getFullResults(
+  p: ParserM<T, State<CharSequence>>,
+  s: CharSequence
+) = getResultsInternal(p, State.ret(s)).filter { it.state.s.isEmpty() }.map { it.res }

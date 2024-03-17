@@ -1,5 +1,7 @@
 package monadicParser
 
+import monadicParser.ParserM.Companion.ret
+
 fun interface ParserM <T, S> {
   operator fun invoke(s: S): List<Result<T, S>>
 
@@ -57,3 +59,6 @@ fun term(term: Regex): ParserM<CharSequence, State<CharSequence>> = ParserM { st
   else listOf()
 }
 
+fun <T, S> eps(): ParserM<T?, S> = ret(null)
+
+fun <T, S> opt(a: ParserM<T, S>) = a as ParserM<T?, S> alt eps()

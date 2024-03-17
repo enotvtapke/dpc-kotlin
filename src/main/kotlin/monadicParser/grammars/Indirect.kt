@@ -15,7 +15,7 @@ object Indirect {
 
 }
 
-object ComplexIndirect {
+object ComplexIndirectNotLLk {
   data object A : BaseParser<String, State<CharSequence>>() {
     override val par: ParserM<String, State<CharSequence>> =
       def(
@@ -40,7 +40,7 @@ object ComplexIndirect {
   }
 }
 
-object ComplexIndirect1 {
+object ComplexIndirect {
   data object A : BaseParser<String, State<CharSequence>>() {
     override val par: ParserM<String, State<CharSequence>> =
       def(
@@ -87,5 +87,6 @@ object ComplexIndirect1 {
 fun main() {
 //  println(Indirect.C(State.ret("acccc")))
 //  println(open(ComplexIndirect1.A(State.ret("cbaba")).filterIsInstance<Deferred<String, State<CharSequence>>>()))
-  println(ComplexIndirect1.A(State.ret("Acbacba")))
+  println(ComplexIndirect.A(State.ret("Ededa")))
+//  println(ComplexIndirect1.A(State.ret("Acbacba")))
 }

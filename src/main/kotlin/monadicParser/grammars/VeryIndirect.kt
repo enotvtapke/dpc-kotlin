@@ -21,5 +21,5 @@ object VeryIndirect {
 }
 
 fun main() {
-  println(Indirect.C(State.ret("acccc")))
+  println(VeryIndirect.C(State.ret("acccc")))
 }

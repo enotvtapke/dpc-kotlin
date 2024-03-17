@@ -66,7 +66,7 @@ data object F : BaseParser<FF, State<CharSequence>>() {
 
 fun main() {
 //  println(run(E, State.ret("(1+1+1+1)*3")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
-  println(run(E, State.ret("1+1")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
+  println(E(State.ret("1+1")).filter { (it as Immediate<Expr, State<CharSequence>>).state.s.isEmpty()})
 //  println(run(E, State.ret("42")))
 //  println(E(State.ret("42")))
 //  println(E(State.ret("(((((1)))))")))
