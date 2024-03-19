@@ -1,7 +1,6 @@
-package monadicParser.grammars
+package monadicParserRefac.stack.grammars
 
-import monadicParser.checkParser
-import monadicParser.grammars.Exponential.F
+import monadicParserRefac.stack.checkParser
 import org.junit.jupiter.api.Test
 
 class ExponentialTest {
@@ -12,6 +11,7 @@ class ExponentialTest {
     // As such left recursive rule E tries to compute deferred many times.
     // На каждом втором уровне стэка вызовов вызывается парсер E, вызов которого приводит к стэку вызовов высотой на 1 меньше, чем у родительского парсера.
     // Это стэк снова состоит на 50% из парсеров E, каждый из которых приводит к стэку ещё на 1 меньше.
-    checkParser(F, "(((((((((((((f)))))))))))))")
+    checkParser(Exponential.F, "(((((((((((((((((fee)))))))))))))))))")
+//    checkParser(F, "((f))")
   }
 }

@@ -85,8 +85,8 @@ object ComplexIndirect {
 
 
 fun main() {
-//  println(Indirect.C(State.ret("acccc")))
+  println(Indirect.C(State.ret("ac")))
 //  println(open(ComplexIndirect1.A(State.ret("cbaba")).filterIsInstance<Deferred<String, State<CharSequence>>>()))
-  println(ComplexIndirect.A(State.ret("Ededa")))
+//  println(ComplexIndirect.A(State.ret("Ededa")))
 //  println(ComplexIndirect1.A(State.ret("Acbacba")))
 }

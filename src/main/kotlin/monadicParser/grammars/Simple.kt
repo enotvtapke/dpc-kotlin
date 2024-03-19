@@ -10,5 +10,5 @@ object C : BaseParser<CharSequence, State<CharSequence>>() {
 }
 
 fun main() {
-  println(run(C, State.ret("accc")))
+  println(run(C, State.ret("ac")))
 }

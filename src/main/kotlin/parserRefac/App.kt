@@ -80,4 +80,3 @@ private data object CCC : Parser {
 private data object T : Parser {
   override fun invoke(s: String) = (-T * !'+' * !'a' + -T * !'-' * !'a' + !'a')(s)
 }
-

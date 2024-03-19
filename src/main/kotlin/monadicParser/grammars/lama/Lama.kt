@@ -117,7 +117,7 @@ fun test(iter: Int) {
   val logFile = Path("src/main/resources/lamaExpr/log.txt")
   logFile.writeText("input_size time\n")
 
-  for (i in iter - 1..<iter) {
+  for (i in iter-1..<iter) {
     val full = left.repeat(i) + middle + right.repeat(i)
     lastInputFile.writeText(full)
     val numOfIter = 5
@@ -149,5 +149,5 @@ fun <T> runParser(p: Parser<T>, input: CharSequence, log: Boolean = false): List
 }
 
 fun main() {
-  test(5)
+  test(20)
 }
