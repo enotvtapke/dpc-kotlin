@@ -3,21 +3,19 @@ package parserRefac
 import graph.Node
 import graph.renderGraph
 import parserRefac.grammars.E
+import parserRefac.grammars.Exponential
 import java.util.function.Predicate
 
 private data class ResultWrapper(val node: Node, val result: Result)
 
-private operator fun Char.not() = Term(this)
-
-private operator fun Parser.times(b: Parser) = Seq(listOf(this, b))
-private operator fun Seq.times(b: Parser) = Seq(this.seq + listOf(b))
-private operator fun Seq.plus(b: Seq) = Alt(listOf(this, b))
-
-private operator fun Seq.plus(b: Parser) = Alt(listOf(this, Seq(listOf(b))))
-private operator fun Alt.plus(b: Seq) = Alt(this.alts + listOf(b))
-
-private operator fun Alt.plus(b: Parser) = Alt(this.alts + listOf(Seq(listOf(b))))
-private operator fun Parser.unaryMinus() = Def(this)
+operator fun Char.not() = Term(this)
+operator fun Parser.times(b: Parser) = Seq(listOf(this, b))
+operator fun Seq.times(b: Parser) = Seq(this.seq + listOf(b))
+operator fun Seq.plus(b: Seq) = Alt(listOf(this, b))
+operator fun Seq.plus(b: Parser) = Alt(listOf(this, Seq(listOf(b))))
+operator fun Alt.plus(b: Seq) = Alt(this.alts + listOf(b))
+operator fun Alt.plus(b: Parser) = Alt(this.alts + listOf(Seq(listOf(b))))
+operator fun Parser.unaryMinus() = Def(this)
 
 private fun step(r: List<ResultWrapper>) = r.flatMap { (prevNode, prevRes) ->
   when (prevRes) {
@@ -63,7 +61,7 @@ fun Parser.run(
 
 fun main() {
   failedBranchesSet.clear()
-  println("\nResult of applying $E:\n" + E.run("((((((((((((1))))))))))))", 14, enableLogging = false))
+  println("\nResult of applying ${Exponential.F}:\n" + Exponential.F.run("((((fe))))", 4, enableLogging = true))
 //  println("\nResult for $CCC:\n" + CCC.run("ccca", 20))
   println("\nSet of failed branches (size ${failedBranchesSet.size()}):")
   println(failedBranchesSet)

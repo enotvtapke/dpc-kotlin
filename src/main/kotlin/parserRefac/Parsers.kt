@@ -21,6 +21,21 @@ data class Def(val parser: Parser) : Parser {
   override fun toString() = "[$parser]"
 }
 
+//data class Seq(val p: Parser, val q: Parser) : Parser {
+//  override fun invoke(s: String): List<kotlin.Result> {
+//    return p(s).flatMap { pr ->
+//      when (pr) {
+//        is Immediate -> q(pr.state)
+//        is Deferred -> listOf(
+//          Deferred(if (pr.parser is Seq) Seq(pr.parser.p, Seq(pr.parser.q, q)) else Seq(pr.parser, q), pr.state)
+//        )
+//      }
+//    }
+//  }
+//
+//  override fun toString() = "$p \u22B3 $q"
+//}
+
 data class Seq(val seq: List<Parser>) : Parser {
   private fun internal(s: String, consumed: List<Token>, seq: List<Parser>): List<Result> = when {
     seq.isEmpty() -> listOf(Immediate(consumed, s))
@@ -34,7 +49,10 @@ data class Seq(val seq: List<Parser>) : Parser {
             failedBranchesSet.add(s, consumed + res.consumed)
             listOf(Failed(consumed + res.consumed, res.remainder))
           }
-          is Deferred -> listOf(Deferred(consumed + res.consumed, Seq(listOf(res.parser) + tail), res.remainder))
+          is Deferred -> {
+            val r = if (res.parser is Seq) res.parser.seq else listOf(res.parser)
+            listOf(Deferred(consumed + res.consumed, Seq(r + tail), res.remainder))
+          }
         }
       }
     }

@@ -1,0 +1,37 @@
+package monadicParser.classic.grammars
+
+
+import monadicParser.classic.grammars.Lama.runParser
+import monadicParser.classic.runClassic
+import monadicParser.classic.stopCriteria
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
+import kotlin.io.path.Path
+import kotlin.io.path.readText
+
+class LamaTest {
+  @Test
+  fun correctness() {
+    val middle = Path("src/main/resources/lamaExpr/middle.txt").readText()
+    val res = runParser({
+      listOf(runClassic(Lama.Expr, it, ::stopCriteria))
+    }, middle)
+    Assertions.assertThat(res).hasSize(1)
+    Assertions.assertThat(res.first().toString()).isEqualTo(Path("/home/enotvtapke/thesis/dpc-kotlin/src/test/resources/res.txt").readText())
+  }
+
+  @Test
+  fun performance() {
+    Lama.test(10) {
+      listOf(runClassic(Lama.Expr, it, ::stopCriteria))
+    }
+  }
+
+  @Test
+  fun a() {
+    val res = runParser({
+      listOf(runClassic(Lama.Expr, it, ::stopCriteria))
+    }, "(((((((((((42)))))))))))")
+    println(res)
+  }
+}

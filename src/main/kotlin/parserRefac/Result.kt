@@ -11,7 +11,8 @@ data class Deferred(
   val parser: Parser,
   override val remainder: String
 ) : Result(consumed, remainder) {
-  override fun toString() = "\u27E8${consumed.print}, $parser, `$remainder`\u27E9"
+//  override fun toString() = "\u27E8${consumed.print}, $parser, `$remainder`\u27E9"
+  override fun toString() = "\u27E8$parser, `$remainder`\u27E9"
 }
 
 data class Immediate(override val consumed: List<Token>, override val remainder: String) : Result(consumed, remainder) {
