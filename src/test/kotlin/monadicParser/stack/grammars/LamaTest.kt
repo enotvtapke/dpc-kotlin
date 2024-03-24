@@ -18,6 +18,6 @@ class LamaTest {
 
   @Test
   fun performance() {
-    Lama.test(20, Lama.Expr)
+    Lama.test(10, Lama.Expr)
   }
 }

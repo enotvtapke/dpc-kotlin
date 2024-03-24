@@ -45,10 +45,10 @@ var counter: Int = 0
 
 fun <T, S> run(parser: ParserM<T, State<S>>, initialState: State<S>): List<Res<T, State<S>>> {
   counter++
-//  val memoized = memo[Pair(parser, initialState.s) as Pair<ParserM<*, State<*>>, *>]
-//  if (memoized != null) return memoized.map { r ->
-//    r.mapState { State(it.s as S, initialState.invocationStack, it.depth) }
-//  } as List<Result<T, State<S>>>
+  val memoized = memo[Pair(parser, initialState.s) as Pair<ParserM<*, State<*>>, *>]
+  if (memoized != null) return memoized.map { r ->
+    r.copy(second = State(r.second.s, initialState.invocationStack as InvocationStack<Any?>, r.second.depth))
+  } as List<Res<T, State<S>>>
   val stepResult = parser(initialState)
   val deferredResults = stepResult.filterDef()
   val immediateResults = stepResult.filterImm()
@@ -64,7 +64,7 @@ fun <T, S> run(parser: ParserM<T, State<S>>, initialState: State<S>): List<Res<T
         it.second
       )
     }
-//    memo[Pair(parser, initialState.s) as Pair<ParserM<*, State<*>>, *>] = res as List<Result<*, State<*>>>
+    memo[Pair(parser, initialState.s) as Pair<ParserM<*, State<*>>, *>] = res as List<Res<*, State<*>>>
     res
   }
 }

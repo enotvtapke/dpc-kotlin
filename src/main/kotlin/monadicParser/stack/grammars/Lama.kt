@@ -7,6 +7,7 @@ import monadicParser.BaseParserM
 import monadicParser.opt
 import monadicParser.stack.State
 import monadicParser.stack.def
+import monadicParser.stack.resetTable
 import monadicParser.stack.term
 import kotlin.io.path.Path
 import kotlin.io.path.appendText
@@ -113,6 +114,7 @@ object Lama {
   }
 
   fun <T> runParser(parser: ParserM<T, State<String>>, input: State<String>): List<T> {
+    resetTable()
     val results: MutableList<T> = mutableListOf()
     val out = Path("./out.txt")
     out.writeText("")
@@ -138,8 +140,10 @@ object Lama {
     logFile.writeText("input_size time\n")
 
     for (i in iter - 1..<iter) {
+//    for (i in 0..<iter) {
       val full = left.repeat(i) + middle + right.repeat(i)
       lastInputFile.writeText(full)
+      Path("src/main/resources/lamaExpr/inputs/input_$i.txt").writeText(full)
       val numOfIter = 5
       val meanTime = generateSequence {
         measureTime {
